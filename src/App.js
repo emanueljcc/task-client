@@ -1,26 +1,43 @@
-import React from 'react';
-import logo from './logo.svg';
-import './App.css';
+import React, { useState, useEffect } from 'react';
+import { Container, Card } from "react-bootstrap"
+import InputForm from './components/InputForm';
+import List from './components/List';
+import { getAll, remove } from "./config/Api";
 
 function App() {
-  return (
-    <div className="App">
-      <header className="App-header">
-        <img src={logo} className="App-logo" alt="logo" />
-        <p>
-          Edit <code>src/App.js</code> and save to reload.
-        </p>
-        <a
-          className="App-link"
-          href="https://reactjs.org"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          Learn React
-        </a>
-      </header>
-    </div>
-  );
+    const [rows, setRows] = useState([]);
+    const [reload, setReload] = useState(false);
+
+    useEffect(() => {
+        (async () => {
+            const { data } = await getAll();
+            setRows(data);
+        })();
+        setReload(false);
+    }, [reload]);
+
+    const deletedTask = (id) => {
+        remove(id);
+        setReload(true);
+    }
+
+    return (
+        <Container>
+            <Card>
+                <Card.Header className="text-center">TODO List - React Bootstrap</Card.Header>
+                <Card.Body>
+
+                    <InputForm setReload={setReload} />
+
+                </Card.Body>
+                <Card.Footer className="text-muted">
+
+                    <List rows={rows} setRows={setRows} deletedTask={deletedTask} setReload={setReload} />
+
+                </Card.Footer>
+            </Card>
+        </Container>
+    );
 }
 
 export default App;
